@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sleek MP3 Converter</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    
+    <style>
+        :root {
+            --primary-color: #6a1b9a; /* Deep Purple */
+            --secondary-color: #7e57c2; /* Medium Purple for accents */
+            --tertiary-color: #42a5f5; /* Bright Blue for downloads */
+            --background-light: #f3f4f6; /* Light gray-blue */
+            --background-dark: #ffffff;
+            --text-color: #333333;
+            --light-gray: #e0e0e0;
+            --shadow-light: 0 5px 15px rgba(0, 0, 0, 0.08);
+            --border-radius: 12px;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #e0e7f7, #d5e0f7); /* Soft blue gradient */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            color: var(--text-color);
+            overflow: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle at top left, var(--secondary-color) 0%, transparent 25%),
+                        radial-gradient(circle at bottom right, var(--primary-color) 0%, transparent 25%);
+            opacity: 0.1;
+            animation: moveGradient 30s infinite alternate;
+            z-index: -1;
+        }
+
+        @keyframes moveGradient {
+            0% { transform: translate(0%, 0%); }
+            100% { transform: translate(10%, 10%); }
+        }
+
+        .container {
+            background: var(--background-dark);
+            padding: 2.5rem;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-light);
+            text-align: center;
+            width: 90%;
+            max-width: 550px;
+            animation: fadeIn 1s ease-out;
+            position: relative;
+            z-index: 1;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        h1 {
+            color: var(--primary-color);
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            font-size: 2.2rem;
+        }
+
+        p {
+            font-weight: 300;
+            color: #555;
+            margin-bottom: 2rem;
+            line-height: 1.6;
+        }
+
+        .input-group {
+            display: flex;
+            margin-top: 1.5rem;
+            border: 1px solid var(--light-gray);
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+        }
+
+        .input-group:focus-within {
+            border-color: var(--primary-color);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        #youtube-url {
+            flex: 1;
+            padding: 1rem 1.25rem;
+            border: none;
+            font-size: 1rem;
+            outline: none;
+            background-color: var(--background-light);
+            color: var(--text-color);
+        }
+
+        #youtube-url::placeholder {
+            color: #a0a0a0;
+        }
+
+        #convert-btn {
+            padding: 1rem 1.75rem;
+            border: none;
+            background-color: var(--primary-color);
+            color: white;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        #convert-btn:hover {
+            background-color: #512da8; /* Darker purple on hover */
+            transform: translateY(-2px);
+        }
+
+        #convert-btn:active {
+            transform: translateY(0);
+        }
+
+        #results {
+            margin-top: 2rem;
+            font-size: 1.1rem;
+            min-height: 80px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            animation: slideInUp 0.5s ease-out;
+        }
+
+        @keyframes slideInUp {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        #results p {
+            margin-bottom: 0.8rem;
+            font-size: 1rem;
+            color: #555;
+        }
+
+        #results strong {
+            color: var(--primary-color);
+            font-weight: 600;
+        }
+
+        #results a {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            background-color: var(--tertiary-color); /* Blue for download */
+            color: white;
+            padding: 0.9rem 2.2rem;
+            text-decoration: none;
+            border-radius: var(--border-radius);
+            font-weight: 600;
+            margin-top: 1rem;
+            transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+            box-shadow: 0 4px 10px rgba(66, 165, 245, 0.3); /* Blue shadow */
+        }
+
+        #results a:hover {
+            background-color: #2196f3; /* Darker blue on hover */
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(66, 165, 245, 0.4);
+        }
+
+        .loading {
+            color: #555;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 400;
+        }
+
+        .loading .spinner {
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            border-top: 4px solid var(--primary-color);
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .error {
+            color: var(--primary-color);
+            font-weight: 400;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 600px) {
+            .container {
+                padding: 1.5rem;
+            }
+            h1 {
+                font-size: 1.8rem;
+            }
+            .input-group {
+                flex-direction: column;
+            }
+            #youtube-url {
+                border-radius: var(--border-radius) var(--border-radius) 0 0;
+            }
+            #convert-btn {
+                width: 100%;
+                border-radius: 0 0 var(--border-radius) var(--border-radius);
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1><i class="fas fa-headphones"></i> MP3 Converter</h1>
+        <p>Effortlessly transform YouTube videos into high-quality MP3s .</p>
+        
+        <div class="input-group">
+            <input type="text" id="youtube-url" placeholder="Paste YouTube URL here...">
+            <button id="convert-btn">
+                <i class="fas fa-sync-alt"></i> Convert
+            </button>
+        </div>
+        
+        <div id="results">
+            </div>
+    </div>
+
+    <script>
+        document.getElementById('convert-btn').addEventListener('click', () => {
+            const url = document.getElementById('youtube-url').value;
+            const resultsDiv = document.getElementById('results');
+
+            const videoId = extractVideoID(url);
+            
+            if (!videoId) {
+                resultsDiv.innerHTML = `<p class="error"><i class="fas fa-exclamation-triangle"></i> Please enter a valid YouTube URL.</p>`;
+                return;
+            }
+            
+            resultsDiv.innerHTML = `<p class="loading"><span class="spinner"></span> Converting... please wait.</p>`;
+
+            const RAPIDAPI_KEY = 'df5adca759msh361dac7924c6d3ep1a755cjsnb41f753bb38d';
+            const RAPIDAPI_HOST = 'youtube-mp36.p.rapidapi.com';
+
+            const fetchUrl = `https://${RAPIDAPI_HOST}/dl?id=${videoId}`;
+            const options = {
+                method: 'GET',
+                headers: {
+                    'x-rapidapi-key': RAPIDAPI_KEY,
+                    'x-rapidapi-host': RAPIDAPI_HOST
+                }
+            };
+
+            fetch(fetchUrl, options)
+                .then(response => {
+                    if (!response.ok) {
+                        return response.json().then(err => { throw new Error(err.msg || 'Network response was not ok'); });
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.status === 'ok') {
+                        resultsDiv.innerHTML = `
+                            <p><strong>${data.title}</strong></p>
+                            <a href="${data.link}" download="${data.title}.mp3"><i class="fas fa-download"></i> Download MP3</a>
+                        `;
+                    } else {
+                        resultsDiv.innerHTML = `<p class="error"><i class="fas fa-times-circle"></i> Error: ${data.msg}</p>`;
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    let errorMessage = 'Could not connect to the API. ';
+                    if (error.message.includes('quota')) {
+                        errorMessage += 'You might have exceeded your API quota.';
+                    } else if (error.message.includes('key')) {
+                         errorMessage += 'Your API key might be invalid.';
+                    } else {
+                        errorMessage += 'Please check your internet connection or try again later.';
+                    }
+                    resultsDiv.innerHTML = `<p class="error"><i class="fas fa-times-circle"></i> ${errorMessage}</p>`;
+                });
+        });
+
+        function extractVideoID(url) {
+            const regex = /(?:youtube\.com\/(?:[^\/\n\s]+\/\S+\/|(?:v|e(?:mbed)?)\/|\S*?[?&]v=)|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
+            const match = url.match(regex);
+            return match ? match[1] : null;
+        }
+    </script>
+</body>
+</html>
